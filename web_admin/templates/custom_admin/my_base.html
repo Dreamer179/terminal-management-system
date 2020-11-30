@@ -44,11 +44,12 @@
             {% endblock %}
 
         {% endblock %}
-        {% csrf_token %}
+
 
     </head>
 
     <body id="body">
+    {% csrf_token %}
     <div class="overlay">
         <img src="{% static '/captured_images/close.png' %}" alt="">
         <div class="slide">
@@ -107,7 +108,7 @@
             function showListImage(id,camera_side){
 
                 const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
-
+                console.log("csrftoken",csrftoken)
                 $.ajax({
                 url: "http://localhost:9000/api/get_image_dir",
                 type: 'POST',

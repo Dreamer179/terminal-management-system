@@ -117,7 +117,7 @@ a.button:hover {
 }
 .slide-item img{
     width:100%;
-
+    max-height:300px
 }
 .overlay .slide.slick-initialized.slick-slider{
     width:80%;
