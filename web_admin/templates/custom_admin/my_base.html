@@ -1,0 +1,162 @@
+{% load static i18n customtag %}
+
+<!DOCTYPE html>
+<html lang="en">
+{% block html %}
+
+    <head>
+        {% block head %}
+            <meta charset="utf-8">
+            <title>
+                {% block title %}{{ title }} | {{ site_title|default:_('F.Smart Door') }}{% endblock %}
+            </title>
+
+            {% block style %}
+                {# Core Styles for templates #}
+                <link href="{% static 'styles/bootstrap.min.css' %}" rel="stylesheet">
+                <link href="{% static 'admin/css/responsive.css' %}" rel="stylesheet">
+
+                <link href="{% static 'vendor/fontawesome-free/css/all.min.css' %}" rel="stylesheet" type="text/css">
+                <link href="{% static 'css/fonts.css' %}" rel="stylesheet">
+
+                {# Core Styles for custom_admin templates #}
+                <link href="{% static 'css/sb-admin-2.min.css' %}" rel="stylesheet">
+
+                {# Custom Styles #}
+                <link href="{% static 'styles/custom.css' %}" rel="stylesheet">
+
+                <link rel="stylesheet" type="text/css" href="{% static 'vendor/slick/slick.css' %} "/>
+                <link rel="stylesheet" type="text/css" href="{% static 'vendor/slick/slick-theme.css' %}"/>
+            {% endblock %}
+
+            {% block script %}
+                {# Core Scripts for template #}
+                <script src="{% static 'vendor/jquery/jquery.min.js' %}"></script>
+                <script src="{% static 'styles/popper.min.js' %}"></script>
+                {#                <script src="{% static 'scripts/bootstrap.min.js' %}"></script>#}
+                <script src="{% static 'vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+                <script src="{% static 'vendor/jquery-easing/jquery.easing.min.js' %}"></script>
+
+                <script src="{% static 'vendor/slick/slick.min.js' %}"></script>
+
+                {# Core Scripts for custom_admin templates #}
+                <script src="{% static 'js/sb-admin-2.min.js' %}" defer></script>
+            {% endblock %}
+
+        {% endblock %}
+        {% csrf_token %}
+
+    </head>
+
+    <body id="body">
+    <div class="overlay">
+        <img src="{% static '/captured_images/close.png' %}" alt="">
+        <div class="slide">
+<!--            <div class="slide-item">-->
+<!--                <img src="/static/captured_images/717/front2_4_1606434864522.jpg">-->
+<!--            </div>-->
+<!--            <div class="slide-item">-->
+<!--                <img src="/static/captured_images/717/front2_4_1606434864522.jpg">-->
+<!--            </div>-->
+<!--            <div class="slide-item">-->
+<!--                <img src="/static/captured_images/717/front2_4_1606434864522.jpg">-->
+<!--            </div>-->
+<!--            <div class="slide-item">-->
+<!--                <img src="/static/captured_images/717/front2_4_1606434864522.jpg">-->
+<!--            </div>-->
+<!--            <div class="slide-item">-->
+<!--                <img src="/static/captured_images/717/front2_4_1606434864522.jpg">-->
+<!--            </div>-->
+<!--            <div class="slide-item">-->
+<!--                <img src="/static/captured_images/717/front2_4_1606434864522.jpg">-->
+<!--            </div>-->
+<!--            <div class="slide-item">-->
+<!--                2-->
+<!--            </div>-->
+<!--            <div class="slide-item">-->
+<!--                3-->
+<!--            </div>-->
+<!--            <div class="slide-item">-->
+<!--                4-->
+<!--            </div>-->
+<!--            <div class="slide-item">-->
+<!--                5-->
+<!--            </div>-->
+        </div>
+    </div>
+    {% block body %}{% endblock %}
+    </body>
+    <script>
+        $('.overlay img').click(function(){
+            $('.overlay').removeClass("open-slide")
+            $(".slide").empty();
+            $(".slide").removeClass(["slick-initialized","slick-slider"]);
+        })
+        function createImageDivElement(imageArr){
+                let htmlTemplace = "<div class='slide-item'><a href='#urlImage' target='_blank'> <img src='#urlImage' > </a></div>"
+                let htmlString=""
+                imageArr.forEach(imagePath=>{
+                    htmlString+= htmlTemplace.replace(/#urlImage/gi,imagePath)
+                })
+
+                $(".slide").html(htmlString);
+                $('.overlay').addClass("open-slide")
+
+            }
+
+            function showListImage(id,camera_side){
+
+                const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+                $.ajax({
+                url: "http://localhost:9000/api/get_image_dir",
+                type: 'POST',
+                headers: {'X-CSRFToken': csrftoken},
+                data:{id,camera_side},
+                success: function(res) {
+                       console.log(res.path)
+                    if(res.path.length==0){
+                        alert("Không có ảnh nào để hiển thị")
+                    }
+                    else{
+                        createImageDivElement(res.path)
+                        $(".slide").not('.slick-initialized').slick({
+                            dots: true,
+                            infinite: false,
+                            speed: 300,
+                            slidesToShow: 3,
+                           slidesToScroll: 3
+                        })
+
+                    }
+
+                }
+            });
+
+            }
+            $('.overlay').click(function(e){
+                $('.overlay').removeClass("open-slide")
+                $(".slide").empty();
+                $(".slide").removeClass(["slick-initialized","slick-slider"]);
+            })
+            $('.slide').click(function(e){
+                e.stopPropagation();
+            })
+            $('#action-toggle').change(function(e){
+                if($('#action-toggle').is(':checked')){
+                    $('.action-select').prop("checked",true)
+                }
+                else{
+                    $('.action-select').prop("checked",false)
+                }
+
+            })
+
+
+<!--        $('.slide').slick({-->
+<!--          slidesToShow: 4,-->
+<!--           slidesToScroll: 4-->
+<!--        });-->
+    </script>
+{% endblock %}
+</html>
